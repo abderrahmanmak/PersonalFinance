@@ -17,6 +17,11 @@ class RedisRateLimitMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        #temporary
+        if settings.DEBUG:
+            return self.get_response(request)
+        ###
+        
         ip = self._get_client_ip(request)
         path = request.path
 

@@ -1,0 +1,415 @@
+<!-- templates/finance/dashboard.html -->
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="flex gap-6">
+    <!-- Left / Center Column (70%) -->
+    <div class="flex-1 space-y-6">
+        
+        <!-- Welcome Banner & KPI Grid -->
+        <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-2xl p-6 relative">
+            <h2 class="text-2xl font-bold text-gray-900">Good Morning, <br>{{ request.user.full_name|default:request.user.username }} 👋</h2>
+            <p class="text-sm text-gray-500 mt-1">Here's your financial overview for this month.</p>
+            
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-4 gap-4 mt-6 relative z-10">
+                <!-- Total Balance -->
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center mb-3">
+                        <i data-lucide="wallet" class="w-4 h-4 text-emerald-500"></i>
+                    </div>
+                    <p class="text-xs text-gray-500">Total Balance</p>
+                    <h3 class="text-xl font-bold text-gray-900 mt-1">${{ payload.kpis.total_balance|floatformat:2|intcomma }}</h3>
+                    <div class="flex items-center gap-1 mt-2 text-xs font-medium">
+                        {% if payload.kpis.balance_mom > 0 %}
+                        <span class="text-emerald-500 flex items-center gap-1"><i data-lucide="arrow-up" class="w-3 h-3"></i> +{{ payload.kpis.balance_mom|floatformat:1 }}%</span>
+                        {% elif payload.kpis.balance_mom < 0 %}
+                        <span class="text-rose-500 flex items-center gap-1"><i data-lucide="arrow-down" class="w-3 h-3"></i> {{ payload.kpis.balance_mom|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="text-gray-400 flex items-center gap-1"><i data-lucide="minus" class="w-3 h-3"></i> 0%</span>
+                        {% endif %}
+                        <span class="text-gray-400 font-normal">vs last month</span>
+                    </div>
+                </div>
+                <!-- Monthly Income -->
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center mb-3">
+                        <i data-lucide="arrow-down-left" class="w-4 h-4 text-purple-500"></i>
+                    </div>
+                    <p class="text-xs text-gray-500">Monthly Income</p>
+                    <h3 class="text-xl font-bold text-gray-900 mt-1">${{ payload.kpis.monthly_income|floatformat:2|intcomma }}</h3>
+                    <div class="flex items-center gap-1 mt-2 text-xs font-medium">
+                        {% if payload.kpis.income_mom > 0 %}
+                        <span class="text-emerald-500 flex items-center gap-1"><i data-lucide="arrow-up" class="w-3 h-3"></i> +{{ payload.kpis.income_mom|floatformat:1 }}%</span>
+                        {% elif payload.kpis.income_mom < 0 %}
+                        <span class="text-rose-500 flex items-center gap-1"><i data-lucide="arrow-down" class="w-3 h-3"></i> {{ payload.kpis.income_mom|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="text-gray-400 flex items-center gap-1"><i data-lucide="minus" class="w-3 h-3"></i> 0%</span>
+                        {% endif %}
+                        <span class="text-gray-400 font-normal">vs last month</span>
+                    </div>
+                </div>
+                <!-- Monthly Expenses -->
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center mb-3">
+                        <i data-lucide="arrow-up-right" class="w-4 h-4 text-rose-500"></i>
+                    </div>
+                    <p class="text-xs text-gray-500">Monthly Expenses</p>
+                    <h3 class="text-xl font-bold text-gray-900 mt-1">${{ payload.kpis.monthly_expense|floatformat:2|intcomma }}</h3>
+                    <div class="flex items-center gap-1 mt-2 text-xs font-medium">
+                        {% if payload.kpis.expense_mom > 0 %}
+                        <span class="text-rose-500 flex items-center gap-1"><i data-lucide="arrow-up" class="w-3 h-3"></i> +{{ payload.kpis.expense_mom|floatformat:1 }}%</span>
+                        {% elif payload.kpis.expense_mom < 0 %}
+                        <span class="text-emerald-500 flex items-center gap-1"><i data-lucide="arrow-down" class="w-3 h-3"></i> {{ payload.kpis.expense_mom|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="text-gray-400 flex items-center gap-1"><i data-lucide="minus" class="w-3 h-3"></i> 0%</span>
+                        {% endif %}
+                        <span class="text-gray-400 font-normal">vs last month</span>
+                    </div>
+                </div>
+                <!-- Savings -->
+                <div class="bg-white rounded-xl p-4 shadow-sm">
+                    <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mb-3">
+                        <i data-lucide="piggy-bank" class="w-4 h-4 text-blue-500"></i>
+                    </div>
+                    <p class="text-xs text-gray-500">Savings</p>
+                    <h3 class="text-xl font-bold text-gray-900 mt-1">${{ payload.kpis.savings|floatformat:2|intcomma }}</h3>
+                    <div class="flex items-center gap-1 mt-2 text-xs font-medium">
+                        {% if payload.kpis.savings_mom > 0 %}
+                        <span class="text-emerald-500 flex items-center gap-1"><i data-lucide="arrow-up" class="w-3 h-3"></i> +{{ payload.kpis.savings_mom|floatformat:1 }}%</span>
+                        {% elif payload.kpis.savings_mom < 0 %}
+                        <span class="text-rose-500 flex items-center gap-1"><i data-lucide="arrow-down" class="w-3 h-3"></i> {{ payload.kpis.savings_mom|floatformat:1 }}%</span>
+                        {% else %}
+                        <span class="text-gray-400 flex items-center gap-1"><i data-lucide="minus" class="w-3 h-3"></i> 0%</span>
+                        {% endif %}
+                        <span class="text-gray-400 font-normal">vs last month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-2 gap-6">
+            <!-- Spending Overview -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-900">Spending Overview</h3>
+                    <button class="text-xs text-gray-400 flex items-center gap-1">This Month <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+                </div>
+                <div class="h-48 w-full">
+                    <canvas id="spendingChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Expense by Category -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-900">Expense by Category</h3>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-1/2 relative h-40 flex items-center justify-center">
+                        <canvas id="donutChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-2">
+                            <span class="text-sm font-bold text-gray-900">${{ payload.kpis.monthly_expense|floatformat:2|intcomma }}</span>
+                            <span class="text-[10px] text-gray-400">Total Spent</span>
+                        </div>
+                    </div>
+                    <div class="w-1/2 pl-4 space-y-3" id="donutLegend">
+                        <!-- Custom Legend injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-gray-900">Recent Transactions</h3>
+                <a href="{% url 'finance:transactions' %}" class="text-xs text-brand-600 font-medium flex items-center gap-1 hover:underline">
+                    View All <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-500">
+                    <thead class="text-xs text-gray-400 uppercase bg-gray-50/50">
+                        <tr>
+                            <th class="py-3 px-2 font-medium">Date</th>
+                            <th class="py-3 px-2 font-medium">Description</th>
+                            <th class="py-3 px-2 font-medium">Category</th>
+                            <th class="py-3 px-2 font-medium text-right">Amount</th>
+                            <th class="py-3 px-2 font-medium text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for tx in payload.recent_transactions %}
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="py-3 px-2 flex items-center gap-2 text-xs">
+                                <div class="w-7 h-7 rounded-full flex items-center justify-center {{ tx.category__badge_bg|default:'bg-gray-100 text-gray-600' }}">
+                                    <i data-lucide="{{ tx.category__icon_name|default:'receipt' }}" class="w-3 h-3"></i>
+                                </div>
+                                {{ tx.date|date:"M d, Y" }}
+                            </td>
+                            <td class="py-3 px-2 font-medium text-gray-900">{{ tx.description }}</td>
+                            <td class="py-3 px-2">
+                                <span class="px-2 py-1 rounded-md text-[10px] font-medium {{ tx.category__badge_bg|default:'bg-gray-100 text-gray-600' }}">
+                                    {{ tx.category__name|default:'General' }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-2 text-right font-medium {% if tx.transaction_type == 'INCOME' %}text-emerald-500{% else %}text-gray-900{% endif %}">
+                                {% if tx.transaction_type == 'INCOME' %}+{% else %}-{% endif %}${{ tx.amount|floatformat:2|intcomma }}
+                            </td>
+                            <td class="py-3 px-2 text-center">
+                                {% if tx.status == 'COMPLETED' %}
+                                <span class="px-2 py-1 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-600">Completed</span>
+                                {% else %}
+                                <span class="px-2 py-1 rounded-md text-[10px] font-medium bg-amber-50 text-amber-600">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-gray-400">
+                                <div class="flex flex-col items-center justify-center py-2">
+                                    <i data-lucide="receipt" class="w-8 h-8 text-gray-300 mb-2"></i>
+                                    <p class="text-xs">No recent transactions recorded</p>
+                                    <a href="{% url 'finance:add_transaction' %}" class="mt-2 text-xs text-brand-600 font-semibold hover:underline flex items-center gap-1">
+                                        <i data-lucide="plus" class="w-3 h-3"></i> Add Transaction
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar (30%) -->
+    <div class="w-[340px] space-y-6">
+        
+        <!-- Card Widget -->
+        {% with card=payload.cards.0 %}
+        {% if card %}
+        <div class="bg-[#101426] rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
+            <div class="relative z-10">
+                <div class="flex justify-between items-start mb-8">
+                    <div class="text-sm font-semibold tracking-widest text-gray-300 uppercase">{{ card.network }}</div>
+                    {% if card.is_primary %}
+                    <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-white/10 text-gray-300 tracking-wider">Primary</span>
+                    {% endif %}
+                </div>
+                <div class="mb-6">
+                    <i data-lucide="cpu" class="w-8 h-8 text-yellow-400/80 mb-2"></i>
+                    <p class="text-xs text-gray-400">{{ card.nickname }}</p>
+                    <p class="text-lg tracking-[0.2em] font-mono mt-1">•••• {{ card.last_four }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400">Available Balance</p>
+                    <h2 class="text-3xl font-bold mt-1">${{ card.balance|floatformat:2|intcomma }}</h2>
+                </div>
+                <a href="{% url 'finance:cards' %}" class="w-full mt-6 bg-white text-gray-900 py-3 rounded-xl text-sm font-semibold hover:bg-gray-50 transition flex justify-center items-center gap-2">
+                    View Card Details <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-[#101426] rounded-3xl p-6 text-white shadow-lg relative overflow-hidden border border-gray-800">
+            <div class="flex flex-col items-center justify-center py-6 text-center">
+                <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-3">
+                    <i data-lucide="credit-card" class="w-6 h-6 text-gray-300"></i>
+                </div>
+                <h4 class="text-base font-semibold text-white">No Linked Cards</h4>
+                <p class="text-xs text-gray-400 mt-1 max-w-[220px]">Link a card or account to track your available balances in real time.</p>
+                <a href="{% url 'finance:cards' %}" class="mt-4 bg-brand-600 hover:bg-brand-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Link Card
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Goals Widget -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-bold text-gray-900">Goals</h3>
+                <a href="{% url 'finance:goals' %}" class="text-xs text-brand-600 font-medium flex items-center gap-1 hover:underline">
+                    View All <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </a>
+            </div>
+            <div class="space-y-5">
+                {% for goal in payload.goals %}
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center {{ goal.icon_bg }}">
+                                <i data-lucide="{{ goal.icon_name }}" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-900">{{ goal.title }}</p>
+                                <p class="text-xs text-gray-400">${{ goal.current_amount|floatformat:0|intcomma }} / ${{ goal.target_amount|floatformat:0|intcomma }}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold text-gray-500">{{ goal.progress }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-1.5">
+                        <div class="{{ goal.bar_color }} h-1.5 rounded-full" style="width: {{ goal.progress }}%"></div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-6">
+                    <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-2">
+                        <i data-lucide="target" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium">No savings goals yet</p>
+                    <a href="{% url 'finance:goals' %}" class="mt-2 inline-flex items-center text-xs text-brand-600 font-semibold hover:underline gap-1">
+                        <i data-lucide="plus" class="w-3 h-3"></i> Create a Goal
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Inspiration Card -->
+        <div class="bg-gradient-to-br from-brand-50 to-purple-50 rounded-2xl p-5 relative overflow-hidden">
+            <i data-lucide="sparkles" class="w-5 h-5 text-brand-500 mb-3"></i>
+            <h4 class="font-semibold text-gray-900 text-sm">Small steps today, <br>big dreams tomorrow.</h4>
+            <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-brand-200 rounded-full blur-2xl opacity-40"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Initialization using Django JSON payload -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const lineData = JSON.parse('{{ payload.charts.line|escapejs }}');
+    const donutData = JSON.parse('{{ payload.charts.donut|escapejs }}');
+
+    // 1. Spending Overview (Mixed Line & Bar Chart)
+    const spendingCanvas = document.getElementById('spendingChart');
+    if (spendingCanvas) {
+        new Chart(spendingCanvas, {
+            type: 'line',
+            data: {
+                labels: lineData.labels,
+                datasets: [{
+                    type: 'line',
+                    label: 'Trend',
+                    data: lineData.data,
+                    borderColor: '#6366F1',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: 'rgba(99, 102, 241, 0.08)'
+                }, {
+                    type: 'bar',
+                    label: 'Daily Spent',
+                    data: lineData.data,
+                    backgroundColor: '#E0E7FF',
+                    borderRadius: 4,
+                    barThickness: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) { return ' Spent: $' + Number(ctx.raw || 0).toFixed(2); }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        border: { display: false },
+                        grid: { color: '#F3F4F6', drawTicks: false },
+                        ticks: {
+                            callback: (val) => '$' + (val >= 1000 ? (val/1000).toFixed(1) + 'k' : val),
+                            color: '#9CA3AF',
+                            font: { size: 10 }
+                        }
+                    },
+                    x: {
+                        border: { display: false },
+                        grid: { display: false },
+                        ticks: {
+                            display: true,
+                            maxTicksLimit: 6,
+                            color: '#9CA3AF',
+                            font: { size: 9 }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Expense by Category (Donut Chart)
+    const donutCtx = document.getElementById('donutChart');
+    if (donutCtx) {
+        const hasExpenses = donutData.data && donutData.data.length > 0 && donutData.data.some(v => v > 0);
+        new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: hasExpenses ? donutData.labels : ['No Expenses'],
+                datasets: [{
+                    data: hasExpenses ? donutData.data : [1],
+                    backgroundColor: hasExpenses ? donutData.colors : ['#F3F4F6'],
+                    borderWidth: 0,
+                    cutout: '75%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: hasExpenses,
+                        callbacks: {
+                            label: function(ctx) { return ' $' + Number(ctx.raw || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Build Custom Donut Legend
+    const legendContainer = document.getElementById('donutLegend');
+    if (legendContainer) {
+        const hasExpenses = donutData.data && donutData.data.length > 0 && donutData.data.some(v => v > 0);
+        if (!hasExpenses) {
+            legendContainer.innerHTML = '<div class="text-xs text-gray-400 py-4 text-center">No expenses recorded this month</div>';
+        } else {
+            const totalDonut = donutData.data.reduce((a, b) => a + b, 0);
+            let legendHTML = '';
+            donutData.labels.forEach((label, i) => {
+                const val = donutData.data[i];
+                const pct = totalDonut > 0 ? Math.round((val / totalDonut) * 100) : 0;
+                const color = donutData.colors[i];
+                legendHTML += `
+                    <div class="flex items-center justify-between text-[11px]">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ${color}"></span>
+                            <span class="text-gray-600 truncate">${label}</span>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="text-gray-400">${pct}%</span>
+                            <span class="font-medium text-gray-900">$${val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            legendContainer.innerHTML = legendHTML;
+        }
+    }
+});
+</script>
+{% endblock %}

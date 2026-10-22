@@ -15,8 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    
+    # OAuth2 and built-in auth routes
+    path("accounts/", include("allauth.urls")),
+    
+    # Maps the root URL ("/") directly to your Finora dashboard
+    path("", include("apps.finance.urls")),
 ]
